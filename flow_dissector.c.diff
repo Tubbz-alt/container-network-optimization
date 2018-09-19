@@ -1,59 +1,13 @@
 --- ../linux-4.9.100/net/core/flow_dissector.c	2018-05-16 03:08:45.000000000 -0500
-+++ ./net/core/flow_dissector.c	2018-09-18 19:33:51.181822842 -0500
-@@ -120,7 +120,12 @@
- 	struct flow_dissector_key_tags *key_tags;
- 	struct flow_dissector_key_vlan *key_vlan;
- 	struct flow_dissector_key_keyid *key_keyid;
- 	bool skip_vlan = false;
-+
-+    //add by Kun
-+    struct flow_dissector_key_devid *key_devid;
-+    //end
-+
-+    bool skip_vlan = false;
- 	u8 ip_proto = 0;
- 	bool ret;
-
-@@ -162,6 +167,13 @@
- 	case htons(ETH_P_IP): {
- 		const struct iphdr *iph;
- 		struct iphdr _iph;
- ip:
- 		iph = __skb_header_pointer(skb, nhoff, sizeof(_iph), data, hlen, &_iph);
- 		if (!iph || iph->ihl < 5)
-@@ -178,6 +190,18 @@
-
- 			memcpy(&key_addrs->v4addrs, &iph->saddr,
- 			       sizeof(key_addrs->v4addrs));
- 			key_control->addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
- 		}
-
-@@ -538,6 +562,18 @@
- 		break;
- 	}
++++ ./net/core/flow_dissector.c	2018-09-18 22:01:03.088732651 -0500
+@@ -555,6 +555,10 @@
+ 	key_basic->n_proto = proto;
+ 	key_basic->ip_proto = ip_proto;
 
 +//add by Kun
-+	if (dissector_uses_key(flow_dissector,
-+			       FLOW_DISSECTOR_KEY_DEVID)) {
-+		key_devid = skb_flow_dissector_target(flow_dissector,
-+						      FLOW_DISSECTOR_KEY_DEVID,
-+						      target_container);
-+		key_devid->dev_id = skb->dev->ifindex;
-+	}
-+
++    key_basic->padding = (u8) (skb->dev->ifindex);
 +//end
 +
-+
- 	if (dissector_uses_key(flow_dissector,
- 			       FLOW_DISSECTOR_KEY_PORTS)) {
- 		key_ports = skb_flow_dissector_target(flow_dissector,
-@@ -545,6 +581,16 @@
- 						      target_container);
- 		key_ports->ports = __skb_flow_get_ports(skb, nhoff, ip_proto,
- 							data, hlen);
-+
- 	}
+ 	return ret;
 
- out_good:
-
-
+ out_bad:
