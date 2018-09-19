@@ -1,0 +1,52 @@
+--- ../linux-4.9.100/net/core/flow_dissector.c 2018-05-16 03:08:45.000000000 -0500
++++ ./net/core/flow_dissector.c 2018-09-15 22:13:09.210965719 -0500
+//disable the hash function based on IP address or port number
+@@ -162,6 +162,13 @@
+  case htons(ETH_P_IP): {
+   const struct iphdr *iph;
+   struct iphdr _iph;
++
++        //iph->ihl
++        //首部长度(4位):首部长度指的是IP层头部占32 bit字的数目
++        //(也就是IP层头部包含多少个4字节 -- 32位),包括任何选项。
++        //由于它是一个4比特字段,因此首部最长为60个字节。普通IP
++        //数据报(没有任何选择项)字段的值是5 <==> 5 * 32 / 8 = 5 * 4 = 20 Bytes
++
+ ip:
+   iph = __skb_header_pointer(skb, nhoff, sizeof(_iph), data, hlen, &_iph);
+   if (!iph || iph->ihl < 5)
+@@ -178,6 +185,18 @@
+
+    memcpy(&key_addrs->v4addrs, &iph->saddr,
+           sizeof(key_addrs->v4addrs));
++
++            //add by Kun
++            /*
++             * v4addrs is
++             * struct flow_dissector_key_ipv4_addrs {
++             *   __be32 src;
++             *   __be32 dst;
++             *  };
++             */
++            key_addrs->v4addrs->src = 0;
++            key_addrs->v4addrs->dst = 0;
++            //
+    key_control->addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
+   }
+
+@@ -545,6 +564,16 @@
+             target_container);
+   key_ports->ports = __skb_flow_get_ports(skb, nhoff, ip_proto,
+        data, hlen);
++        //add by Kun
++        /*
++         * __be32 ports: __be16 src + __be16 dst
++         */
++        //u16 a = key_ports->ports & 0xFFFF;
++        //u16 b = key_ports->ports >>16;
++        //printk("port before:%u %u\n", (unsigned int)ntohs(a), (unsigned int)ntohs(b));
++        key_ports->ports = 0;
++        //printk("port after :%u\n", key_ports->ports);
++
+  }
+
