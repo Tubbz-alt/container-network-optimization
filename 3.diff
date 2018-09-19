@@ -4,7 +4,7 @@
  	struct flow_dissector_key_tags *key_tags;
  	struct flow_dissector_key_vlan *key_vlan;
  	struct flow_dissector_key_keyid *key_keyid;
--	bool skip_vlan = false;
+ 	bool skip_vlan = false;
 +
 +    //add by Kun
 +    struct flow_dissector_key_devid *key_devid;
