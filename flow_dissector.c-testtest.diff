@@ -1,0 +1,69 @@
+--- ../linux-4.9.100/net/core/flow_dissector.c	2018-05-16 03:08:45.000000000 -0500
++++ ./net/core/flow_dissector.c	2018-09-18 22:37:18.264978645 -0500
+@@ -21,6 +21,14 @@
+ #include <net/flow_dissector.h>
+ #include <scsi/fc/fc_fcoe.h>
+
++//add by Kun
++#include <uapi/linux/tcp.h>
++#include <uapi/linux/ip.h>
++
++#define NIPQUAD(addr) \
++            ((unsigned char *) &addr)[3], ((unsigned char *) &addr)[2], ((unsigned char *) &addr)[1], ((unsigned char *) &addr)[0]
++
++
+ static void dissector_set_key(struct flow_dissector *flow_dissector,
+ 			      enum flow_dissector_key_id key_id)
+ {
+@@ -555,6 +563,10 @@
+ 	key_basic->n_proto = proto;
+ 	key_basic->ip_proto = ip_proto;
+
++//add by Kun
++    key_basic->padding = (u8) (skb->dev->ifindex);
++//end
++
+ 	return ret;
+
+ out_bad:
+@@ -691,9 +703,41 @@
+ static inline u32 ___skb_get_hash(const struct sk_buff *skb,
+ 				  struct flow_keys *keys, u32 keyval)
+ {
++//Kun
++    struct iphdr *iph;
++    u32 saddr, daddr;
++
++    struct iphdr *ip_header;
++    struct udphdr *udp_header;
++    struct tcphdr *tcp_header;
++    unsigned int dest_port, source_port;
++
++    iph = ip_hdr(skb);
++    saddr = ntohl(iph->saddr);
++    daddr = ntohl(iph->daddr);
++    ip_header = (struct iphdr *)skb_network_header(skb);
++
++if (ip_header->protocol == 17) {      //if protocol is UDP
++     udp_header = (struct udphdr *)(skb_transport_header(skb));
++     source_port = (unsigned int)ntohs(udp_header->source);
++     dest_port = (unsigned int)ntohs(udp_header->dest);
++ } else if(ip_header->protocol == 6) {   //if protocol is TCP
++     tcp_header = (struct tcphdr *)(skb_transport_header(skb));
++     source_port = (unsigned int)ntohs(tcp_header->source);
++     dest_port = (unsigned int)ntohs(tcp_header->dest);
++ }
++
++ printk("ip:%d.%d.%d.%d: %u ip:%d.%d.%d.%d: %u dev:%u\n",
++            NIPQUAD(saddr), source_port, NIPQUAD(daddr), dest_port, skb->dev->ifindex );
++
++
++
+ 	skb_flow_dissect_flow_keys(skb, keys,
+ 				   FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL);
+
++printk("skb:dev:%u", keys->basic.padding);
++
++
+ 	return __flow_hash_from_keys(keys, keyval);
+ }
