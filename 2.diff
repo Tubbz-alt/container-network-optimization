@@ -1,0 +1,34 @@
+--- ../linux-4.9.100/include/net/flow_dissector.h	2018-05-16 03:08:45.000000000 -0500
++++ ./include/net/flow_dissector.h	2018-09-18 19:28:25.094650096 -0500
+@@ -128,6 +128,8 @@
+ 	FLOW_DISSECTOR_KEY_FLOW_LABEL, /* struct flow_dissector_key_flow_tags */
+ 	FLOW_DISSECTOR_KEY_GRE_KEYID, /* struct flow_dissector_key_keyid */
+ 	FLOW_DISSECTOR_KEY_MPLS_ENTROPY, /* struct flow_dissector_key_keyid */
++/*add by Kun*/
++    FLOW_DISSECTOR_KEY_DEVID, /* struct flow_dissector_key_dev */
+
+ 	FLOW_DISSECTOR_KEY_MAX,
+ };
+@@ -148,6 +150,12 @@
+ 	unsigned short int offset[FLOW_DISSECTOR_KEY_MAX];
+ };
+
++//add by Kun
++struct flow_dissector_key_dev {
++    __u32 dev_id;
++};
++
++
+ struct flow_keys {
+ 	struct flow_dissector_key_control control;
+ #define FLOW_KEYS_HASH_START_FIELD basic
+@@ -157,6 +165,9 @@
+ 	struct flow_dissector_key_keyid keyid;
+ 	struct flow_dissector_key_ports ports;
+ 	struct flow_dissector_key_addrs addrs;
++
++    //add by Kun
++    struct flow_dissector_key_dev devid;
+ };
+
+ #define FLOW_KEYS_HASH_OFFSET		\
