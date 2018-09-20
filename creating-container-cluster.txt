@@ -1,0 +1,146 @@
+Build container cluster on top of flannel:
+
+1, install etcd and execute it
+
+on VM1
+$ etcd    -initial-advertise-peer-urls http://VM1-IP:2380 \
+        -listen-peer-urls http://VM1-IP:2380 \
+        -listen-client-urls http://VM1-IP:2379,http://127.0.0.1:4001 \
+        -advertise-client-urls http://VM1-IP:2379 \
+        -initial-cluster-token etcd-cluster \
+        -initial-cluster tonysuo-VM1=http://VM1-IP:2380,tonysuo-VM2=http://VM2-IP:2380 \
+        -initial-cluster-state new
+
+on VM2/3/4... do the same thing, using different IP
+
+
+2,  configure etcdctl
+
+Option 1: using vxlan mode
+$ etcdctl set /coreos.com/network/config '{"Network":"10.1.0.0/16", "SubnetLen":24, "Backend":{"Type":"vxlan" }}'
+
+on vm1:
+$ etcdctl set /coreos.com/network/subnets/10.1.2.0-24 '{"PublicIP":"129.107.126.220","BackendType":"udp","BackendData":{"VtepMAC":"26:c9:f5:71:9d:0c"}}'
+
+here the publicIP is vm2's IP and VtepMAC is flannel MAC of vm2
+
+
+
+Option 2: using udp mode
+$ etcdctl set /coreos.com/network/config \
+'{"Network":"10.1.0.0/16", \
+"SubnetLen":24, \
+"SubnetMin":"10.1.1.0", \
+"SubnetMax":"10.1.1.255",  \
+"Backend":{"Type":"udp", "Port":7890 } \
+}'
+
+on vm1:
+$ etcdctl set /coreos.com/network/subnets/10.1.2.0-24 '{"PublicIP":"129.107.126.220","BackendType":"udp","BackendData":{"VtepMAC":"26:c9:f5:71:9d:0c"}}'
+
+here the publicIP is vm2's IP and VtepMAC is flannel MAC of vm2
+
+perform the same configuration on other vms
+
+
+
+3, execute flannel
+$ sudo flanneld
+
+
+
+4, configure the docker 
+config network for docker0 and restart docker daemon with Flannel network configuration, execute commands as follows:
+
+$ service docker stop
+$ source /run/flannel/subnet.env
+$ sudo ifconfig docker0 ${FLANNEL_SUBNET}
+$ sudo dockerd --bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU} &
+
+
+
+5, run the container on different vms (disable the firewall)
+
+on VM1：
+# docker run -t -i --name test-flannel-1  ubuntu:16.10 /bin/bash -P
+# apt update -y
+# apt install wget iputils-ping fish gcc openssh-client net-tools g++ make vim git autoconf automake libtool -y
+
+
+on VM2：
+# docker run -t -i --name test-flannel-2  ubuntu:16.10 /bin/bash -P
+# apt update -y
+# apt install wget iputils-ping fish gcc openssh-client net-tools g++ make vim git autoconf automake libtool -y
+
+after that, you can ping from one container to another one.
+
+
+
+
+Build container cluster on top of docker vxlan:
+
+1, install etcd and execute it
+
+on VM1
+$ etcd    -initial-advertise-peer-urls http://VM1-IP:2380 \
+        -listen-peer-urls http://VM1-IP:2380 \
+        -listen-client-urls http://VM1-IP:2379,http://127.0.0.1:4001 \
+        -advertise-client-urls http://VM1-IP:2379 \
+        -initial-cluster-token etcd-cluster \
+        -initial-cluster tonysuo-VM1=http://VM1-IP:2380,tonysuo-VM2=http://VM2-IP:2380 \
+        -initial-cluster-state new
+
+on VM2/3/4... do the same thing, using different IP
+
+
+2, add daemon.json to /etc/docker in VM1
+
+$ sudo vim /etc/docker/daemon.json
+
+{
+    "cluster-store":"etcd://129.107.126.123:2379",
+    "cluster-advertise":"129.107.126.123:2376"
+}
+
+the cluster-store is the device ip which etcd is running, 
+the cluster-advertise is the local host ip address
+
+
+Restart docker service to verify
+
+$ sudo service docker restart
+$ sudo docker info | grep "Cluster"
+WARNING: No swap limit support
+Cluster Store: etcd://129.107.126.123:2379
+Cluster Advertise: 129.107.126.123:2376
+
+
+
+3, create overlay network 
+
+$ sudo docker network create -d overlay myoverlay-1
+17c7751410e7305e88e205521775e3bf99dc2406c80b1219b72274fa884bd3c3
+
+$ sudo docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+da561e6ef90c        bridge              bridge              local
+26362372b64b        host                host                local
+17c7751410e7        myoverlay-1         overlay             global
+a72c2bebcc6a        none                null                local
+
+
+
+4, add your container to the overlay network
+
+$ sudo docker run -t -i --name  overlay-docker1  --net myoverlay-1  ubuntu:16.10 /bin/bash
+
+for existing containers:
+
+$ docker run -id --name t233_t1 busybox sh
+$ docker network connect myoverlay-1   t233_t1
+
+Then create container on other hosts following the same steps. 
+
+After that, you can ping from one container to another one.
+
+
