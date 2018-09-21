@@ -1,4 +1,5 @@
 skb_get_hash(struct sk_buff *skb)
+//in the current design, skb->sw_hash will be set once hash is calculated at somewhere
 --> __skb_get_hash(struct sk_buff *skb)
 --> ___skb_get_hash(const struct sk_buff *skb, struct flow_keys *keys, u32 keyval) //return hash
 {
