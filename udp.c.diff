@@ -19,7 +19,6 @@
 +       dest_port = (unsigned int)ntohs(uh->dest);
 +       if (dest_port == 12345) {
 +               uh->source = htons(23456);
-+//             printk("tttt\n");
 +       }
 +//end
 +
