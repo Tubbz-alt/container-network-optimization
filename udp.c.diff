@@ -1,0 +1,27 @@
+--- ../linux-4.9.100/net/ipv4/udp.c     2018-05-16 03:08:45.000000000 -0500
++++ ./net/ipv4/udp.c    2018-10-17 22:47:24.942121827 -0500
+@@ -798,6 +798,10 @@
+        int len = skb->len - offset;
+        __wsum csum = 0;
+
++//add by Kun
++       int dest_port = 0;
++//end
++
+        /*
+         * Create a UDP header
+         */
+@@ -807,6 +811,14 @@
+        uh->len = htons(len);
+        uh->check = 0;
+
++//add by Kun
++       dest_port = (unsigned int)ntohs(uh->dest);
++       if (dest_port == 12345) {
++               uh->source = htons(23456);
++//             printk("tttt\n");
++       }
++//end
++
+        if (is_udplite)                                  /*     UDP-Lite      */
+                csum = udplite_csum(skb);
