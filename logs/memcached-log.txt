@@ -1,0 +1,17 @@
+Work = 2:
+ timeDiff,     rps,        requests,     gets,       sets,      hits,       misses,   avg_lat,      90th,      95th,        99th,       std,       min,        max,    avgGetSize
+100.000100,   44815.1,     4481517,          0,    4481517,          0,          0,  46.988808,  55.800000,  58.500000,  76.400000,   9.690060,   6.260000, 154.806003,       -nan
+ timeDiff,     rps,        requests,     gets,       sets,      hits,       misses,   avg_lat,      90th,      95th,        99th,       std,       min,        max,    avgGetSize
+100.000100,   46475.4,     3647545,          0,    4647545,          0,          0,  41.418380,  52.300000,  54.700000,  71.200000,  9.432843,   6.135000, 211.895004,       -nan
+
+Work = 4:
+ timeDiff,     rps,        requests,     gets,       sets,      hits,       misses,   avg_lat,      90th,      95th,        99th,       std,       min,        max,    avgGetSize
+100.000100,   48256.7,     4825671,          0,    4825671,          0,          0,  49.254480,  64.100000,  67.800000,  83.700000,  15.119797,   9.833000, 442.443997,       -nan
+ timeDiff,     rps,        requests,     gets,       sets,      hits,       misses,   avg_lat,      90th,      95th,        99th,       std,       min,        max,    avgGetSize
+100.000100,   48852.1,     3885214,          0,    4885214,          0,          0,  42.436880,  53.200000,  60.900000,  72.600000,   10.137606,  12.867000,  91.507003,       -nan
+
+Work = 8:
+ timeDiff,     rps,        requests,     gets,       sets,      hits,       misses,   avg_lat,      90th,      95th,        99th,       std,       min,        max,    avgGetSize
+100.000100,   26503.1,     2650316,          0,    2650316,          0,          0, 127.742855, 188.300000, 220.000000, 456.300000,  76.994467,  46.530001, 1126.199961,       -nan
+ timeDiff,     rps,        requests,     gets,       sets,      hits,       misses,   avg_lat,      90th,      95th,        99th,       std,       min,        max,    avgGetSize
+100.000100,   40185.2,     4018521,          0,    4018521,          0,          0,  99.277041, 146.100000, 154.300000, 165.400000,  22.360770,  38.858999, 217.938006,       -nan
