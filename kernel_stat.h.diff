@@ -1,0 +1,54 @@
+--- ../clean/linux-4.3/include/linux/kernel_stat.h      2015-11-01 18:05:25.000000000 -0600
++++ include/linux/kernel_stat.h 2018-12-23 22:07:05.401110764 -0600
+@@ -38,16 +38,50 @@
+ struct kernel_stat {
+        unsigned long irqs_sum;
+        unsigned int softirqs[NR_SOFTIRQS];
++
++//add by Kun
++       u64 load;
++       u64 previous_load;
++
++       /*
++       * 1: high load
++       * 0: low  load
++       */
++       unsigned long tag;
++
++//end
++};
++
++//add by Kun
++/*
++struct cpu_tag {
++       u64 load;
++       u64 previous_load;
++       unsigned long tag;
+ };
++*/
++//end
+
+ DECLARE_PER_CPU(struct kernel_stat, kstat);
+ DECLARE_PER_CPU(struct kernel_cpustat, kernel_cpustat);
+
+
+
++//add by Kun
++//DECLARE_PER_CPU(struct cpu_tag, ctag);
++//end
++
+ /* Must have preemption disabled for this to be meaningful. */
+ #define kstat_this_cpu this_cpu_ptr(&kstat)
+ #define kcpustat_this_cpu this_cpu_ptr(&kernel_cpustat)
++//add by Kun
++//#define ctag_this_cpu this_cpu_ptr(&ctag)
++//end
++
+ #define kstat_cpu(cpu) per_cpu(kstat, cpu)
+ #define kcpustat_cpu(cpu) per_cpu(kernel_cpustat, cpu)
++//add by Kun
++//#define ctag_cpu(cpu) per_cpu(ctag, cpu)
++//end
++
+
+ extern unsigned long long nr_context_switches(void);

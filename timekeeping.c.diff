@@ -1,0 +1,112 @@
+--- ../clean/linux-4.3/kernel/time/timekeeping.c        2015-11-01 18:05:25.000000000 -0600
++++ kernel/time/timekeeping.c   2018-12-24 17:45:28.014632695 -0600
+@@ -8,6 +8,11 @@
+  *
+  */
+
++//add by Kun
++#include <linux/kernel_stat.h>
++#include <linux/cpumask.h>
++//end
++
+ #include <linux/timekeeper_internal.h>
+ #include <linux/module.h>
+ #include <linux/interrupt.h>
+@@ -1921,6 +1926,96 @@
+  */
+ void do_timer(unsigned long ticks)
+ {
++//add by Kun
++       int i, j, k = 0;
++       int N = 100;
++
++       cputime64_t user;
++       cputime64_t nice;
++       cputime64_t system;
++       cputime64_t softirq;
++       cputime64_t irq;
++       cputime64_t idle;
++       cputime64_t iowait;
++       cputime64_t steal;
++       cputime64_t guest;
++       cputime64_t guest_nice;
++
++       cputime64_t cpu_load[4];
++       cputime64_t sum_load = 0;
++       cputime64_t avg_load = 0;
++
++       u64 high_tag_threshold = 0;
++       u64 low_tag_threshold = 0;
++
++       //calculate every 100 timer interrupt
++       if (jiffies_64 % N == 0) {
++               for_each_online_cpu(i) {
++                       user            = kcpustat_cpu(i).cpustat[CPUTIME_USER];
++                       nice            = kcpustat_cpu(i).cpustat[CPUTIME_NICE];
++                       system          = kcpustat_cpu(i).cpustat[CPUTIME_SYSTEM];
++                       softirq         = kcpustat_cpu(i).cpustat[CPUTIME_SOFTIRQ];
++                       irq             = kcpustat_cpu(i).cpustat[CPUTIME_IRQ];
++                       idle            = kcpustat_cpu(i).cpustat[CPUTIME_IDLE];
++                       iowait          = kcpustat_cpu(i).cpustat[CPUTIME_IOWAIT];
++                       steal           = kcpustat_cpu(i).cpustat[CPUTIME_STEAL];
++                       guest           = kcpustat_cpu(i).cpustat[CPUTIME_GUEST];
++                       guest_nice      = kcpustat_cpu(i).cpustat[CPUTIME_GUEST_NICE];
++
++                       kstat_cpu(i).load = user + nice + system + softirq + irq + steal;
++//                     ctag_cpu(i).load = user + nice + system + softirq + irq + steal;
++               }
++
++               for(j = 0; j < 4; j++) {
++                       u64 current_load = kstat_cpu(j).load - kstat_cpu(j).previous_load;
++                       if (current_load >= 0) {
++                               cpu_load[j] = current_load;
++                               sum_load = sum_load + current_load;
++                       }
++
++//                     printk("core %d, current_load: %llu\n", j, current_load );
++               }
++
++               if (sum_load >= 0)
++                       avg_load = sum_load >> 2;  //we have 4 cores here
++//             printk("sum %llu, avg: %llu\n", sum_load, avg_load );
++
++
++               for_each_online_cpu(k) {
++                       kstat_cpu(k).previous_load = kstat_cpu(k).load;
++
++                       /*
++                       * if the load is greater than 70% of the CPU or 1.5 times of the average load,
++                       * we treat it's load as high
++                       *
++                       * if the load is less than half of the average low,
++                       * we treat it's load as low
++                       */
++                       high_tag_threshold = avg_load + (avg_load >> 1);
++                       low_tag_threshold  = avg_load >> 1;
++
++                       if (low_tag_threshold < 0) {
++                               low_tag_threshold = 0;
++                       }
++
++                       if (cpu_load[k] > 70 || cpu_load[k] > high_tag_threshold ) {
++                               kstat_cpu(k).tag = 1;
++                       }
++
++                       if (cpu_load[k] < low_tag_threshold  ) {
++                               kstat_cpu(k).tag = 0;
++                       }
++
++//                     printk("core %d, current_load: %llu, tag:%lu, high:%llu low:%llu \n",
++//                                     k, cpu_load[k], kstat_cpu(k).tag, high_tag_threshold, low_tag_threshold   );
++               }
++
++//     printk("\n");
++
++       }
++
++//end
++
+        jiffies_64 += ticks;
+        calc_global_load(ticks);
+ }
+
