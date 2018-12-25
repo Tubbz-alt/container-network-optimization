@@ -1,5 +1,5 @@
---- ../linux-4.9.100/include/linux/skbuff.h	2018-05-16 03:08:45.000000000 -0500
-+++ ./include/linux/skbuff.h	2018-09-20 20:56:35.405675649 -0500
+--- ../clean/linux-4.3/include/linux/skbuff.h   2015-11-01 18:05:25.000000000 -0600
++++ include/linux/skbuff.h      2018-12-24 20:48:03.319062142 -0600
 @@ -23,6 +23,7 @@
  #include <linux/rbtree.h>
  #include <linux/socket.h>
@@ -8,17 +8,42 @@
  #include <linux/atomic.h>
  #include <asm/types.h>
  #include <linux/spinlock.h>
-@@ -1139,7 +1140,8 @@
+@@ -632,6 +633,8 @@
+        __u8                    ipvs_property:1;
+        __u8                    inner_protocol_type:1;
+        __u8                    remcsum_offload:1;
++       //add by Kun
++       __u8                    phase_num:2;
+        /* 3 or 5 bit hole */
+
+ #ifdef CONFIG_NET_SCHED
+@@ -956,6 +959,9 @@
+        skb->l4_hash = is_l4;
+        skb->sw_hash = is_sw;
+        skb->hash = hash;
++
++       //add by Kun
++       skb->phase_num = skb->phase_num + 1;
+ }
+
+ static inline void
+@@ -1023,8 +1029,18 @@
 
  static inline __u32 skb_get_hash(struct sk_buff *skb)
  {
--	if (!skb->l4_hash && !skb->sw_hash)
+-       if (!skb->l4_hash && !skb->sw_hash)
 +//add by Kun
-+//	if (!skb->l4_hash && !skb->sw_hash)
- 		__skb_get_hash(skb);
-    
-+ //@l4_hash: indicate hash is a canonical 4-tuple hash over transport ports.
-+ //@sw_hash: indicates hash was computed in software stack
-+ //sw_hash will be set to 1 at __skb_set_sw_hash when the skb is first time processed for hash
++//     if (!skb->l4_hash && !skb->sw_hash)
++//             __skb_get_hash(skb);
++
++//allow recalculation in VXLAN and veth phase receiving
++       if (skb->phase_num <= 2) {
+                __skb_get_hash(skb);
++       } else {
++               if (!skb->l4_hash && !skb->sw_hash)
++                       __skb_get_hash(skb);
++       }
++//end
 
- 	return skb->hash;
+        return skb->hash;
+ }
