@@ -1,0 +1,167 @@
+--- ../clean/linux-4.3/net/core/dev.c   2015-11-01 18:05:25.000000000 -0600
++++ net/core/dev.c      2018-12-25 18:57:01.937310453 -0600
+@@ -146,6 +146,21 @@
+ /* This should be increased if a protocol with a bigger head is added. */
+ #define GRO_MAX_HEAD (MAX_HEADER + 128)
+
++//Kun
++#include <linux/kernel_stat.h>
++
++#include <uapi/linux/tcp.h>
++
++#include <uapi/linux/ip.h>
++
++#define NIPQUAD(addr) \
++    ((unsigned char *) &addr)[3], ((unsigned char *) &addr)[2], ((unsigned char *) &addr)[1], ((unsigned char *) &addr)[0]
++
++
++//end
++
++
++
+ static DEFINE_SPINLOCK(ptype_lock);
+ static DEFINE_SPINLOCK(offload_lock);
+ struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
+@@ -3273,6 +3288,23 @@
+        u32 tcpu;
+        u32 hash;
+
++//Kun
++    int num_of_non_high = 0;
++    u32 random = 0;
++    u32 i, j = 0;
++
++    /*
++    struct iphdr *iph;
++    u32 saddr, daddr;
++
++struct iphdr *ip_header;
++struct udphdr *udp_header;
++struct tcphdr *tcp_header;
++unsigned int dest_port, source_port;
++*/
++    //end
++
++
+        if (skb_rx_queue_recorded(skb)) {
+                u16 index = skb_get_rx_queue(skb);
+
+@@ -3288,13 +3320,63 @@
+
+        /* Avoid computing hash if RFS/RPS is not active for this rxqueue */
+
++//add by Kun
++/*
++    iph = ip_hdr(skb);
++    saddr = ntohl(iph->saddr);
++    daddr = ntohl(iph->daddr);
++
++ip_header = (struct iphdr *)skb_network_header(skb);
++
++if (ip_header->protocol == 17) {      //if protocol is UDP
++    udp_header = (struct udphdr *)(skb_transport_header(skb));
++    source_port = (unsigned int)ntohs(udp_header->source);
++    dest_port = (unsigned int)ntohs(udp_header->dest);
++
++    printk("ip:%d.%d.%d.%d ip:%d.%d.%d.%d port:%d,%d dev:%s %d\n",
++    NIPQUAD(saddr), NIPQUAD(daddr), source_port, dest_port, skb->dev->name, skb->dev->ifindex );
++
++} else if(ip_header->protocol == 6) {   //if protocol is TCP
++    tcp_header = (struct tcphdr *)(skb_transport_header(skb));
++    source_port = (unsigned int)ntohs(tcp_header->source);
++    dest_port = (unsigned int)ntohs(tcp_header->dest);
++
++    printk("ip:%d.%d.%d.%d ip:%d.%d.%d.%d port:%d,%d dev:%s %d\n",
++    NIPQUAD(saddr), NIPQUAD(daddr), source_port, dest_port, skb->dev->name, skb->dev->ifindex );
++}
++
++*/
++//end
++
++
++
+        flow_table = rcu_dereference(rxqueue->rps_flow_table);
+        map = rcu_dereference(rxqueue->rps_map);
+        if (!flow_table && !map)
+                goto done;
+
+        skb_reset_network_header(skb);
++
++
++//add by Kun
++/*
++        printk("dev: %u %s skb:%u %u phase:%u \n",
++               skb->dev->ifindex, skb->dev->name,
++               skb->l4_hash, skb->sw_hash, skb->phase_num );
++*/
++//end
+        hash = skb_get_hash(skb);
++
++//add by Kun
++/*
++       printk("dev: %u %s hash:%u",
++               skb->dev->ifindex, skb->dev->name, hash
++       );
++*/
++//end
++
++
+        if (!hash)
+                goto done;
+
+@@ -3346,11 +3428,46 @@
+ try_rps:
+
+        if (map) {
+-               tcpu = map->cpus[reciprocal_scale(hash, map->len)];
+-               if (cpu_online(tcpu)) {
+-                       cpu = tcpu;
++               //基于hash和cpu数量(map->len)，随机得到cpu ID
++               //reciprocal_scale(u32 val, u32 ep_ro): "scale" a value into range [0, ep_ro)
++               //((u64) val * ep_ro) >> 32
++               //tcpu = map->cpus[reciprocal_scale(hash, map->len)];
++               //      if (cpu_online(tcpu)) {
++               //      cpu = tcpu;
++               //      goto done;
++               //}
++
++               //add by Kun
++               //if there are 10 CPUs (i=10), and non-high CPU is 8 (num_of_non_high = 8)
++               //random is 3 from (0,8), when for loop is break, we have j=3 and i is the target CPU ID
++               num_of_non_high = kstat_cpu(0).num_of_non_high;
++
++               if (num_of_non_high > 0) {
++                       random = reciprocal_scale(hash, (u32)num_of_non_high);
++
++                       for_each_online_cpu(i) {
++                               //if CPU k's tag is not HIGH
++                               if (kstat_cpu(i).tag < 2) {
++                                       j++;
++                               }
++
++                               if (j >= random) {
++                                       break;
++                               }
++                       }
++
++                       tcpu = i;
+                        goto done;
++               } else {
++               //if all CPUs are busy, just randomly select one CPU
++                       tcpu = map->cpus[reciprocal_scale(hash, map->len)];
++
++                       if (cpu_online(tcpu)) {
++                               cpu = tcpu;
++                               goto done;
++                       }
+                }
++               //end
+        }
+
+ done:
+ 
+
+
+
+
+

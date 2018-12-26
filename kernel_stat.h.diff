@@ -1,6 +1,6 @@
 --- ../clean/linux-4.3/include/linux/kernel_stat.h      2015-11-01 18:05:25.000000000 -0600
-+++ include/linux/kernel_stat.h 2018-12-23 22:07:05.401110764 -0600
-@@ -38,16 +38,50 @@
++++ include/linux/kernel_stat.h 2018-12-25 15:44:35.743123537 -0600
+@@ -38,16 +38,56 @@
  struct kernel_stat {
         unsigned long irqs_sum;
         unsigned int softirqs[NR_SOFTIRQS];
@@ -10,11 +10,17 @@
 +       u64 previous_load;
 +
 +       /*
-+       * 1: high load
++       * 1: normal load
++       * 2: high load
 +       * 0: low  load
 +       */
 +       unsigned long tag;
 +
++       /*
++       * current number of high or non-high tag cpu
++       */
++       int num_of_high;
++       int num_of_non_high;
 +//end
 +};
 +
@@ -30,8 +36,6 @@
 
  DECLARE_PER_CPU(struct kernel_stat, kstat);
  DECLARE_PER_CPU(struct kernel_cpustat, kernel_cpustat);
-
-
 
 +//add by Kun
 +//DECLARE_PER_CPU(struct cpu_tag, ctag);

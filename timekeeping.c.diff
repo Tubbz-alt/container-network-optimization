@@ -1,5 +1,5 @@
 --- ../clean/linux-4.3/kernel/time/timekeeping.c        2015-11-01 18:05:25.000000000 -0600
-+++ kernel/time/timekeeping.c   2018-12-24 17:45:28.014632695 -0600
++++ kernel/time/timekeeping.c   2018-12-25 16:11:43.751407411 -0600
 @@ -8,6 +8,11 @@
   *
   */
@@ -12,7 +12,7 @@
  #include <linux/timekeeper_internal.h>
  #include <linux/module.h>
  #include <linux/interrupt.h>
-@@ -1921,6 +1926,96 @@
+@@ -1921,6 +1926,108 @@
   */
  void do_timer(unsigned long ticks)
  {
@@ -37,6 +37,9 @@
 +
 +       u64 high_tag_threshold = 0;
 +       u64 low_tag_threshold = 0;
++
++       int num_of_high = 0;
++       int num_of_non_high = 0;
 +
 +       //calculate every 100 timer interrupt
 +       if (jiffies_64 % N == 0) {
@@ -89,19 +92,27 @@
 +                       }
 +
 +                       if (cpu_load[k] > 70 || cpu_load[k] > high_tag_threshold ) {
-+                               kstat_cpu(k).tag = 1;
-+                       }
-+
-+                       if (cpu_load[k] < low_tag_threshold  ) {
-+                               kstat_cpu(k).tag = 0;
++                               kstat_cpu(k).tag = 2;   //high load
++                               num_of_high++;
++                       } else if (cpu_load[k] < low_tag_threshold  ) {
++                               kstat_cpu(k).tag = 0;   //low load
++                               num_of_non_high++;
++                       } else {
++                               kstat_cpu(k).tag = 1;   //normal load
++                               num_of_non_high++;
 +                       }
 +
 +//                     printk("core %d, current_load: %llu, tag:%lu, high:%llu low:%llu \n",
 +//                                     k, cpu_load[k], kstat_cpu(k).tag, high_tag_threshold, low_tag_threshold   );
 +               }
++               kstat_cpu(0).num_of_high = num_of_high;
++               kstat_cpu(0).num_of_non_high = num_of_non_high;
 +
-+//     printk("\n");
-+
++/*
++       printk("num_of_high: %d, num_of_non_high:%d\n",
++                       num_of_high, num_of_non_high);
++       printk("\n");
++*/
 +       }
 +
 +//end
@@ -109,4 +120,3 @@
         jiffies_64 += ticks;
         calc_global_load(ticks);
  }
-
