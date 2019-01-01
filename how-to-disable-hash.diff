@@ -1,4 +1,4 @@
---- ../linux-4.3.0/net/core/flow_dissector.c 2018-05-16 03:08:45.000000000 -0500
+--- ../linux-4.3/net/core/flow_dissector.c 2018-05-16 03:08:45.000000000 -0500
 +++ ./net/core/flow_dissector.c 2018-09-15 22:13:09.210965719 -0500
 //disable the hash function based on IP address or port number
 @@ -162,6 +162,13 @@

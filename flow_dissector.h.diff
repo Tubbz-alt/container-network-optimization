@@ -1,4 +1,4 @@
---- ../linux-4.3.0/include/net/flow_dissector.h	2018-05-16 03:08:45.000000000 -0500
+--- ../linux-4.3/include/net/flow_dissector.h	2018-05-16 03:08:45.000000000 -0500
 +++ ./include/net/flow_dissector.h	2018-09-19 12:03:34.401621779 -0500
 @@ -28,7 +28,7 @@
  struct flow_dissector_key_basic {
