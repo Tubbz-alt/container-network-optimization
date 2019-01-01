@@ -1,4 +1,4 @@
---- ../linux-4.9.100/net/core/flow_dissector.c	2018-05-16 03:08:45.000000000 -0500
+--- ../linux-4.3.0/net/core/flow_dissector.c	2018-05-16 03:08:45.000000000 -0500
 +++ ./net/core/flow_dissector.c	2018-09-18 22:01:03.088732651 -0500
 @@ -555,6 +555,10 @@
  	key_basic->n_proto = proto;

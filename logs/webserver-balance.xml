@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../../xslt/summary_report.xsl"?>
+<benchResults>
+    <benchSummary name="Elgg benchmark" version="1.0">
+        <runId>1</runId>
+        <startTime>Fri Dec 21 04:56:37 GMT 2018</startTime>
+        <endTime>Fri Dec 21 04:57:33 GMT 2018</endTime>
+        <metric unit="ops/sec">12.567</metric>
+        <passed>false</passed>
+    </benchSummary>
+    <driverSummary name="ElggDriver">
+        <metric unit="ops/sec">12.567</metric>
+        <startTime>Fri Dec 21 04:56:37 GMT 2018</startTime>
+        <endTime>Fri Dec 21 04:57:33 GMT 2018</endTime>
+        <totalOps unit="operations">377</totalOps>
+        <users>100</users>
+        <rtXtps>50.4326</rtXtps>
+        <passed>false</passed>
+        <mix allowedDeviation="0.0200">
+            <operation name="BrowsetoElgg">
+                <successes>2</successes>
+                <failures>0</failures>
+                <mix>0.0104</mix>
+                <requiredMix>0.0103</requiredMix>
+                <passed>true</passed>
+            </operation>
+            <operation name="DoLogin">
+                <successes>0</successes>
+                <failures>0</failures>
+                <mix>0.0000</mix>
+                <requiredMix>0.0103</requiredMix>
+                <passed>true</passed>
+            </operation>
+            <operation name="PostSelfWall">
+                <successes>48</successes>
+                <failures>0</failures>
+                <mix>0.2500</mix>
+                <requiredMix>0.3090</requiredMix>
+                <passed>false</passed>
+            </operation>
+            <operation name="SendChatMessage">
+                <successes>124</successes>
+                <failures>0</failures>
+                <mix>0.6458</mix>
+                <requiredMix>0.5664</requiredMix>
+                <passed>false</passed>
+            </operation>
+            <operation name="AddFriend">
+                <successes>17</successes>
+                <failures>0</failures>
+                <mix>0.0885</mix>
+                <requiredMix>0.0927</requiredMix>
+                <passed>true</passed>
+            </operation>
+            <operation name="Register">
+                <successes>0</successes>
+                <failures>0</failures>
+                <mix>0.0000</mix>
+                <requiredMix>0.0010</requiredMix>
+                <passed>true</passed>
+            </operation>
+            <operation name="Logout">
+                <successes>1</successes>
+                <failures>0</failures>
+                <mix>0.0052</mix>
+                <requiredMix>0.0103</requiredMix>
+                <passed>true</passed>
+            </operation>
+            <operation name="UpdateActivity &amp;">
+                <successes>87</successes>
+                <failures>0</failures>
+                <mix>0.4703</mix>
+                <requiredMix>0.5000</requiredMix>
+                <passed>false</passed>
+            </operation>
+            <operation name="ReceiveChatMessage &amp;">
+                <successes>98</successes>
+                <failures>0</failures>
+                <mix>0.5297</mix>
+                <requiredMix>0.5000</requiredMix>
+                <passed>false</passed>
+            </operation>
+        </mix>
+        <responseTimes unit="milliseconds">
+            <operation name="BrowsetoElgg">
+                <avg>3412.437</avg>
+                <max>3478.902</max>
+                <sd>0.000</sd>
+                <percentile nth="95" suffix="th" limit="500.000">3400.000</percentile>
+                <percentile nth="99" suffix="th" limit="1000.000">3400.000</percentile>
+                <percentile nth="99.9" suffix="th" limit="2000.000">3400.000</percentile>
+                <passed>false</passed>
+            </operation>
+            <operation name="DoLogin">
+                <avg/>
+                <max/>
+                <sd/>
+                <p90th/>
+                <passed/>
+                <p99th/>
+            </operation>
+            <operation name="PostSelfWall">
+                <avg>10950.937</avg>
+                <max>13972.352</max>
+                <sd>1426.610</sd>
+                <percentile nth="95" suffix="th" limit="500.000">&gt; 9900.000</percentile>
+                <percentile nth="99" suffix="th" limit="750.000">&gt; 9900.000</percentile>
+                <percentile nth="99.9" suffix="th" limit="1000.000">&gt; 9900.000</percentile>
+                <passed>false</passed>
+            </operation>
+            <operation name="SendChatMessage">
+                <avg>3409.909</avg>
+                <max>5924.815</max>
+                <sd>858.892</sd>
+                <percentile nth="95" suffix="th" limit="500.000">4900.000</percentile>
+                <percentile nth="99" suffix="th" limit="750.000">5300.000</percentile>
+                <percentile nth="99.9" suffix="th" limit="1000.000">5700.000</percentile>
+                <passed>false</passed>
+            </operation>
+            <operation name="AddFriend">
+                <avg>4863.410</avg>
+                <max>6491.391</max>
+                <sd>689.333</sd>
+                <percentile nth="95" suffix="th" limit="500.000">6000.000</percentile>
+                <percentile nth="99" suffix="th" limit="750.000">6000.000</percentile>
+                <percentile nth="99.9" suffix="th" limit="1000.000">6000.000</percentile>
+                <passed>false</passed>
+            </operation>
+            <operation name="Register">
+                <avg/>
+                <max/>
+                <sd/>
+                <p90th/>
+                <passed/>
+                <p99th/>
+            </operation>
+            <operation name="Logout">
+                <avg>15677.543</avg>
+                <max>15677.543</max>
+                <sd>0.000</sd>
+                <percentile nth="95" suffix="th" limit="500.000">10.000</percentile>
+                <percentile nth="99" suffix="th" limit="750.000">10.000</percentile>
+                <percentile nth="99.9" suffix="th" limit="1000.000">10.000</percentile>
+                <passed>true</passed>
+            </operation>
+            <operation name="UpdateActivity &amp;">
+                <avg>6113.324</avg>
+                <max>8830.639</max>
+                <sd>1118.685</sd>
+                <percentile nth="95" suffix="th" limit="500.000">7900.000</percentile>
+                <percentile nth="99" suffix="th" limit="750.000">8400.000</percentile>
+                <percentile nth="99.9" suffix="th" limit="1000.000">8400.000</percentile>
+                <passed>false</passed>
+            </operation>
+            <operation name="ReceiveChatMessage &amp;">
+                <avg>4948.925</avg>
+                <max>7523.017</max>
+                <sd>1167.250</sd>
+                <percentile nth="95" suffix="th" limit="500.000">6600.000</percentile>
+                <percentile nth="99" suffix="th" limit="750.000">7000.000</percentile>
+                <percentile nth="99.9" suffix="th" limit="1000.000">7000.000</percentile>
+                <passed>false</passed>
+            </operation>
+        </responseTimes>
+        <delayTimes>
+            <operation name="BrowsetoElgg" type="thinkTime">
+                <targetedAvg>9.750</targetedAvg>
+                <actualAvg>12.559</actualAvg>
+                <min>1.999</min>
+                <max>25.459</max>
+                <passed>false</passed>
+            </operation>
+            <operation name="DoLogin" type="thinkTime">
+                <targetedAvg>8.933</targetedAvg>
+                <actualAvg>11.330</actualAvg>
+                <min>2.147</min>
+                <max>21.870</max>
+                <passed>false</passed>
+            </operation>
+            <operation name="PostSelfWall" type="thinkTime">
+                <targetedAvg>2.000</targetedAvg>
+                <actualAvg>5.583</actualAvg>
+                <min>2.147</min>
+                <max>8.374</max>
+                <passed>false</passed>
+            </operation>
+            <operation name="SendChatMessage" type="thinkTime">
+                <targetedAvg>2.000</targetedAvg>
+                <actualAvg>5.469</actualAvg>
+                <min>1.999</min>
+                <max>9.697</max>
+                <passed>false</passed>
+            </operation>
+            <operation name="AddFriend" type="thinkTime">
+                <targetedAvg>2.000</targetedAvg>
+                <actualAvg>5.889</actualAvg>
+                <min>2.147</min>
+                <max>7.781</max>
+                <passed>false</passed>
+            </operation>
+            <operation name="Register" type="thinkTime">
+                <targetedAvg>2.000</targetedAvg>
+                <actualAvg>1.999</actualAvg>
+                <min>1.999</min>
+                <max>1.999</max>
+                <passed>true</passed>
+            </operation>
+            <operation name="Logout" type="thinkTime">
+                <targetedAvg>2.000</targetedAvg>
+                <actualAvg>1.999</actualAvg>
+                <min>1.999</min>
+                <max>1.999</max>
+                <passed>true</passed>
+            </operation>
+            <operation name="UpdateActivity &amp;" type="cycleTime">
+                <targetedAvg/>
+                <actualAvg/>
+                <min/>
+                <max/>
+                <passed/>
+            </operation>
+            <operation name="ReceiveChatMessage &amp;" type="cycleTime">
+                <targetedAvg/>
+                <actualAvg/>
+                <min/>
+                <max/>
+                <passed/>
+            </operation>
+        </delayTimes>
+        <customStats name="Miscellaneous Statistics">
+            <stat>
+                <description>Number of times home page was actually attempted to be accessed.</description>
+                <result>115</result>
+                <passed>true</passed>
+            </stat>
+            <stat>
+                <description>Number of times login was actually attempted.</description>
+                <result>115</result>
+                <passed>true</passed>
+            </stat>
+            <stat>
+                <description>Number of times posting on wall was actually attempted.</description>
+                <result>395</result>
+                <passed>true</passed>
+            </stat>
+            <stat>
+                <description>Number of times update activity was actually attempted.</description>
+                <result>347</result>
+                <passed>true</passed>
+            </stat>
+            <stat>
+                <description>Number of times add friends was actually attempted.</description>
+                <result>104</result>
+                <passed>true</passed>
+            </stat>
+            <stat>
+                <description>Number of times send message was actually attempted.</description>
+                <result>716</result>
+                <passed>true</passed>
+            </stat>
+            <stat>
+                <description>Number of times receive message was actually attempted.</description>
+                <result>397</result>
+                <passed>true</passed>
+            </stat>
+            <stat>
+                <description>Number of times logout was actually attempted.</description>
+                <result>16</result>
+                <passed>true</passed>
+            </stat>
+            <stat>
+                <description>Number of times register was actually attempted.</description>
+                <result>0</result>
+                <passed>true</passed>
+            </stat>
+        </customStats>
+    </driverSummary>
+</benchResults>
