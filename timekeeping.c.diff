@@ -94,7 +94,7 @@
 +                       if (cpu_load[k] > 70 || cpu_load[k] > high_tag_threshold ) {
 +                               kstat_cpu(k).tag = 2;   //high load
 +                               num_of_high++;
-+                       } else if (cpu_load[k] < low_tag_threshold  ) {
++                       } else if (cpu_load[k] < low_tag_threshold ||  cpu_load[k] < 10 ) {
 +                               kstat_cpu(k).tag = 0;   //low load
 +                               num_of_non_high++;
 +                       } else {
